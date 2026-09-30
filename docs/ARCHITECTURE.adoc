@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell (hyperpolymath)
+= ResidualEvidenceTypes.jl architecture
+:toc:
+
+How the package is put together. The reasons behind the design are in
+link:EXPLAINME.adoc[EXPLAINME]. The file-by-file inventory is
+link:architecture/REPOSITORY-MAP.adoc[REPOSITORY-MAP].
+
+== Source
+
+[cols="1,3",options="header"]
+|===
+| File | Contents
+
+| `src/ResidualEvidenceTypes.jl`
+| Module docstring and exports. Includes the two files below, in order.
+
+| `src/core.jl`
+| The generic finite checker, independent of any model: `Case` (candidates
+  computed once at construction), `candidates`, `isconsistent`, `witness`,
+  `refine`; `Verdict`, `Decision`, `decide`; `IdStatus`, `Identification`,
+  `identify`. Each docstring names its counterpart in
+  `ResidualEvidence/Core.agda`.
+
+| `src/signed_integer.jl`
+| The finite model `signed-integer-v1` built on the checker: `View`,
+  `SignedWorld`, `signed_integer_case`, and the table vocabulary `Row`, `row`,
+  `explorer_table` (546 rows), matching `ResidualEvidence/Finite/Row.agda`.
+|===
+
+`core.jl` knows nothing about `signed_integer.jl`. A new model is a new file
+that constructs `Case` values. The checker does not change.
+
+== Evaluation
+
+`Case` filters its worlds once. `decide` and `identify` then scan only the
+candidates, and `refine` filters the existing candidate list rather than
+re-enumerating the worlds. The whole explorer table is 546 cases over 169
+worlds, about 92 000 predicate evaluations.
+
+== Dependencies
+
+None. `[deps]` is empty. `Aqua` and `Test` are test-only.
+
+== Tests
+
+`test/runtests.jl` runs `Aqua.test_all`, then `test/cases/*.jl` in sorted
+order:
+
+* `core.jl`: the checker on a hand-sized case, including inconsistency and
+  refinement.
+* `signed_integer.jl`: the explorer presets, argument refusal, and two
+  monotonicity properties over the whole table.
+* `zz_correspondence.jl`: row-for-row agreement with
+  `test/fixtures/ExplorerTable.agda`, the table generated in
+  residual-evidence-types. The fixture is pinned by SHA-256, so an edit to it
+  fails the suite before any row is compared.
