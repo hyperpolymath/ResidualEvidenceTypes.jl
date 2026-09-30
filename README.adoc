@@ -1,0 +1,221 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath)
+= ResidualEvidenceTypes.jl
+:toc:
+:toc-placement: preamble
+
+// ── Licensing ───────────────────────────────────────────────────────────────
+image:https://img.shields.io/badge/Code-MPL--2.0-blue.svg?logo=mozilla[Code licence: MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
+image:https://img.shields.io/badge/Docs-CC--BY--SA--4.0-blue.svg?logo=creativecommons[Docs licence: CC-BY-SA-4.0,link="https://creativecommons.org/licenses/by-sa/4.0/"]
+image:https://img.shields.io/badge/Provenance-Quantum--Safe-blueviolet[Quantum-Safe Provenance,link="docs/legal/EXHIBIT-B-QUANTUM-SAFE.txt"]
+
+// ── Standard & quality gates ────────────────────────────────────────────────
+image:https://img.shields.io/badge/RSR-Rhodium_Standard-9C27B0[Rhodium Standard Repository,link="https://github.com/hyperpolymath/rhodium-standard-repositories"]
+image:https://api.scorecard.dev/projects/github.com/hyperpolymath/ResidualEvidenceTypes.jl/badge[OpenSSF Scorecard,link="https://scorecard.dev/viewer/?uri=github.com/hyperpolymath/ResidualEvidenceTypes.jl"]
+image:https://sonarcloud.io/api/project_badges/measure?project=hyperpolymath_ResidualEvidenceTypes.jl&metric=alert_status[SonarQube Quality Gate,link="https://sonarcloud.io/summary/new_code?id=hyperpolymath_ResidualEvidenceTypes.jl"]
+image:https://archive.softwareheritage.org/badge/origin/https://github.com/hyperpolymath/ResidualEvidenceTypes.jl/[Archived in Software Heritage,link="https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/hyperpolymath/ResidualEvidenceTypes.jl"]
+
+
+What an observation establishes about the worlds that could have produced it,
+and what it does not.
+
+== The question
+
+A residual is what is left after everything accounted for has been removed:
+reads unassigned by a classifier, signal left after a background model, the
+gap between two measurements. It is tempting to read a nonzero residual as the
+presence of something, and its size as how much. Whether either reading is
+justified depends on what else is assumed, and in particular on what bounds
+the noise.
+
+ResidualEvidenceTypes makes that dependence explicit. You describe the worlds
+under consideration, what each would let you observe, what you actually
+retained, and what you assume. The package enumerates the worlds consistent
+with all of that, the *candidates*, and answers two kinds of question over
+them:
+
+* does a claim hold for every candidate, for none, or only for some?
+  (`decide`)
+* does a quantity take a single value across the candidates? (`identify`)
+
+The first question is presence. The second is identification. They come apart:
+a quantity can be known to be nonzero without its value being known.
+
+== Installation
+
+[source,julia]
+----
+using Pkg
+Pkg.add(url = "https://github.com/hyperpolymath/ResidualEvidenceTypes.jl")
+----
+
+Julia 1.9 or later. The package has no dependencies.
+
+== Quick start
+
+The built-in model is additive: an observed residual `r = u + n`, where `u` is
+the contribution of interest and `n` is noise, both small integers.
+
+[source,julia]
+----
+using ResidualEvidenceTypes
+
+# r = 2, and nothing is assumed about the noise beyond |n| <= 6.
+c = signed_integer_case(residual = 2, noise_bound = 6)
+decide(c, w -> w.latent != 0)
+# Decision{SignedWorld}(UNRESOLVED, SignedWorld(-4, 6), SignedWorld(0, 2))
+#   status, a supporting candidate, a counterexample
+----
+
+The residual alone does not show that `u` is present: `u = 0, n = 2` explains
+it. The counterexample is returned, so the reason is inspectable.
+
+[source,julia]
+----
+# Now assume |n| <= 1.
+c = signed_integer_case(residual = 2, noise_bound = 1)
+decide(c, w -> w.latent != 0).status      # ENTAILED
+identify(c, w -> w.latent)                # Identification(UNIDENTIFIED, [1, 2, 3])
+----
+
+With the bound, `u` is present in every candidate, but its value is still one
+of three. Presence is established. Identification is not.
+
+Assumptions that cannot all hold give no candidates, and nothing follows from
+them:
+
+[source,julia]
+----
+c = signed_integer_case(residual = 2, noise_bound = 1, assume_zero = true)
+decide(c, w -> w.latent != 0).status      # INCONSISTENT
+decide(c, w -> w.latent == 0).status      # INCONSISTENT
+----
+
+An empty candidate set would make every universal claim vacuously true. It is
+reported instead.
+
+== Your own model
+
+`signed_integer_case` is one instance of the general `Case`. Any finite set of
+worlds works:
+
+[source,julia]
+----
+worlds = [(u, n) for u in 0:10 for n in 0:3]
+c = Case(worlds, w -> w[1] + w[2], 7; evidence = w -> w[2] <= 2)
+
+candidates(c)                  # [(5, 2), (6, 1), (7, 0)]
+decide(c, w -> w[1] >= 5)      # ENTAILED
+identify(c, w -> w[1])         # UNIDENTIFIED, [5, 6, 7]
+
+r = refine(c, w -> w[2] == 0)  # add evidence
+identify(r, w -> w[1])         # IDENTIFIED, [7]
+----
+
+`refine` adds evidence. Its candidates are a subset of the original's, so a
+claim that was entailed stays entailed, and a refuted claim stays refuted,
+unless the refinement leaves no candidates.
+
+What you retain matters as much as what you assume. The model's `view`
+argument keeps the residual `EXACT`, only its `SIGN`, or only its `MAGNITUDE`.
+Retaining less can only add candidates:
+
+[source,julia]
+----
+c = signed_integer_case(residual = 2, noise_bound = 0, view = MAGNITUDE)
+identify(c, w -> w.latent).values        # [-2, 2]
+----
+
+== Formal basis
+
+The definitions are the executable side of the Agda development
+https://github.com/hyperpolymath/residual-evidence-types[residual-evidence-types]
+(`--safe --without-K`):
+
+[cols="1,2",options="header"]
+|===
+| Here | There
+
+| `candidates(c)`
+| `Candidate observe r E`: a world, a proof that it produces `r`, and a proof
+  of `E`
+
+| `Case`, `witness`
+| `record Case`, which carries a proof that a candidate exists
+
+| `decide(...).status == ENTAILED`
+| `Holds c P`: `P` for every candidate
+
+| `identify(...).status == IDENTIFIED`
+| `Identified c query`: one value, agreed by every candidate
+
+| `refine`
+| `refine-candidate`, `refine-claim`
+
+| `Row`, `explorer_table()`
+| `ResidualEvidence.Finite.Row`
+|===
+
+The finite model reproduces the table that repository generates from its
+interactive explorer: all 546 configurations of residual, noise bound, view and
+assumption, with the candidate count, both verdicts and the remaining values.
+The test suite parses that generated Agda file and requires agreement on every
+row. That makes it a cross-check between two independent implementations,
+the explorer's JavaScript and this package, over the Agda `Row` vocabulary.
+It is not a proof about either. Agda type-checks the table as a list of rows.
+It does not yet compare the rows with its own checker.
+
+== What it does not do
+
+* Candidate counts are not probabilities. Three candidates are three
+  possibilities, not a one-in-three chance each.
+* A noise bound restricts the model. It is not evidence that real noise obeys
+  it. Choosing the bound is the scientific decision, and the package makes its
+  consequences visible rather than making it for you.
+* Enumeration is exhaustive, so worlds must be finite and small enough to
+  list. The built-in model has 169 worlds.
+* Presence and identification are the only questions. Which source produced a
+  contribution, and what causes it, need a causal model this package does not
+  have.
+
+== Related packages
+
+* https://github.com/hyperpolymath/residual-evidence-types[residual-evidence-types]:
+  the Agda definitions and proofs.
+* https://github.com/hyperpolymath/EchoTypes.jl[EchoTypes.jl]: fibres over a
+  retained observation. A `Case` is such a fibre, refined by evidence.
+* https://github.com/hyperpolymath/EpistemicTypes.jl[EpistemicTypes.jl]:
+  standpoints and warrants for per-row claims. Its `ResidualInfo` is a
+  pipeline summary for taxonomic rows and is unrelated to this package beyond
+  the word.
+
+Each package stands alone. None depends on another.
+
+== Design
+
+The decisions behind the package, and how to check each claim, are in
+link:docs/EXPLAINME.adoc[docs/EXPLAINME.adoc].
+
+== Testing
+
+[source,bash]
+----
+julia --project=. -e 'using Pkg; Pkg.test()'
+----
+
+`Aqua.test_all` (11 checks) runs first, then 55 behaviour tests:
+
+* the checker on a hand-sized case;
+* the explorer's five presets;
+* refusal of arguments outside the model;
+* two properties over the whole table: a tighter noise bound never overturns
+  a settled verdict, and retaining more of the residual never adds candidates;
+* row-for-row agreement with the generated Agda table, which is pinned by its
+  SHA-256.
+
+== Licence
+
+Code, configuration and scripts are link:LICENSE[Mozilla Public License 2.0]
+(`MPL-2.0`); prose documentation is `CC-BY-SA-4.0`. Both texts live in
+`LICENSES/`, and per-file `SPDX-License-Identifier` headers are authoritative.

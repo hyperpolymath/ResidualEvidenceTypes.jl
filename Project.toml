@@ -1,0 +1,20 @@
+name = "ResidualEvidenceTypes"
+uuid = "991b2426-ef47-5ab5-88bd-507ff6599371"
+license = "MPL-2.0"
+version = "0.1.0"
+authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
+description = "What an observation establishes: finite candidate sets, verdicts with witnesses, and value identification, cross-checked against the Agda development residual-evidence-types."
+
+[compat]
+Aqua = "0.8"
+SHA = "0.7"
+Test = "1.9"
+julia = "1.9"
+
+[extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Aqua", "SHA", "Test"]

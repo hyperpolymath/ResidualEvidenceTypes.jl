@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Roadmap
+
+== 0.1.0 (current)
+
+* `Case`, `decide` and `identify`: the finite checker, with inconsistent cases
+  reported, not treated as vacuous.
+* `refine`, which adds evidence by filtering candidates.
+* The `signed-integer-v1` model, with exact, sign and magnitude views.
+* Row-for-row agreement with the Agda explorer table, pinned by SHA-256.
+
+== Candidates for the next release
+
+These are open, and their order is not fixed.
+
+Re-pin the correspondence fixture::
+Take `ExplorerTable.agda` from `main` of `residual-evidence-types` once the
+branch that introduces it has merged.
+
+Composition::
+Combine cases that observe the same latent quantity through different
+channels, so that two partial observations can identify what neither does
+alone.
+
+Property tests over arbitrary cases::
+Randomised checks that refinement never adds candidates and never overturns a
+settled verdict, beyond the built-in table.
+
+More finite models::
+Models with a multiplicative or thresholded observation, alongside the
+additive one.

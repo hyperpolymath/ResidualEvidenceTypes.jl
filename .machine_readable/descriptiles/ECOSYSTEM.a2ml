@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MPL-2.0
+# ECOSYSTEM.a2ml — where ResidualEvidenceTypes.jl sits in the estate.
+
+[metadata]
+project = "ResidualEvidenceTypes.jl"
+ecosystem = "hyperpolymath"
+
+[position]
+type = "julia-library"
+purpose = "Executable companion to residual-evidence-types: finite candidate sets, verdicts with witnesses, and value identification for what an observation does and does not establish."
+# IS-NOT — anti-identity (the boundary-erosion guard)
+what-this-is-not = [
+  "a proof of anything (the Agda repo residual-evidence-types holds the proofs; this package is cross-checked against its table)",
+  "EpistemicTypes.jl's ResidualInfo (a per-row PR2 pipeline heuristic that shares only the word 'residual')",
+  "a probability or likelihood model (candidate counts are not probabilities)",
+  "a causal model (confounding and source identity are outside its scope)",
+]
+
+[pipeline]
+position = "library"
+chain = "residual-evidence-types (Agda) → ResidualEvidenceTypes.jl → (callers that need to state what a residual establishes)"
+notes = "Standalone: zero hard dependencies, usable outside Protoctist and MetaManifold."
+coordination = "nextgen-typing"
+
+[related-projects]
+projects = [
+  { name = "residual-evidence-types", relationship = "formal-specification", notes = "Agda (--safe --without-K) definitions of Candidate, Case, Holds and Identified, and the finite Row vocabulary this package reproduces." },
+  { name = "EchoTypes.jl", relationship = "sibling", notes = "Fibres and retained observations; a Case here is an evidence-refined fibre." },
+  { name = "EpistemicTypes.jl", relationship = "sibling", notes = "Standpoints and warrants for per-row claims." },
+  { name = "nextgen-typing", relationship = "coordination", notes = "Cross-project map and shared glossary." },
+]

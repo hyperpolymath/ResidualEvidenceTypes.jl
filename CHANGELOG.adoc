@@ -1,0 +1,22 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+== Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on https://keepachangelog.com/en/1.1.0/[Keep a
+Changelog], and this project adheres to
+https://semver.org/spec/v2.0.0.html[Semantic Versioning].
+
+=== [0.1.0] - 2026-09-30
+
+==== Added
+
+* `Case`, `candidates`, `isconsistent`, `witness` and `refine`.
+* `decide`, returning a `Verdict` with a supporting candidate and a
+  counterexample.
+* `identify`, returning an `IdStatus` and the distinct values.
+* The `signed-integer-v1` model: `signed_integer_case`, `row` and
+  `explorer_table`.
+* A test suite: Aqua, behaviour tests, and agreement with the Agda explorer
+  table from `residual-evidence-types`.

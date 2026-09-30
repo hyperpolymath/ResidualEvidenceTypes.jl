@@ -1,0 +1,174 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= ResidualEvidenceTypes.jl: design
+:toc: preamble
+
+The decisions behind the package. Each one gives what was chosen, why, and what
+would go wrong without it. The last section says how to check each claim
+yourself.
+
+== Decisions
+
+=== 1. Enumerate the candidates
+
+A `Case` lists every world and keeps those consistent with the observation and
+the evidence. Nothing is sampled or approximated.
+
+Why:: `ENTAILED` means "true of every candidate". A sampled check can report a
+claim as entailed only because it missed the counterexample. With enumeration,
+a verdict is exact relative to the model. If it is wrong, the model is wrong.
+Cost:: the worlds must be finite and listable. The built-in model has 169.
+Larger models are feasible while `observe` and `evidence` stay cheap, because
+construction is one pass over the worlds.
+
+=== 2. Keep observation and evidence apart
+
+A world becomes a candidate when two independent tests pass. `observe(w) ==
+retained` asks what was seen. `evidence(w)` asks what is assumed.
+
+Why:: they fail in different ways. A wrong observation is a data error. A wrong
+assumption, such as a noise bound that is too tight, is a modelling choice. When
+they are kept separate, `refine` can strengthen the assumptions without
+touching the data. A reader can also see which of the two excluded a given
+world.
+
+=== 3. Report an empty case as inconsistent
+
+`decide` has four outcomes. `INCONSISTENT` is distinct from `ENTAILED`.
+
+Why:: over an empty set, "every candidate satisfies P" is vacuously true for
+every `P`, including `P` and `¬P` together. A tool that reported that as
+entailment would confirm any claim under contradictory assumptions. The Agda
+`Case` record rules this out by requiring a candidate. The Julia `Case` lets
+the empty case be built, so that a contradiction can be inspected, and then
+reports it rather than drawing conclusions from it.
+
+=== 4. Return a witness both ways
+
+`Decision` carries the first candidate that satisfies the claim and the first
+that does not.
+
+Why:: `UNRESOLVED` on its own says nothing about why. The counterexample is the
+concrete world that stops the claim, for example `u = 0, n = 2` for "u is
+present". The supporting candidate shows the claim is still possible. "First"
+means first in the order the worlds were given, so results are deterministic
+and can be reproduced.
+
+=== 5. Separate presence from identification
+
+`decide` answers whether a predicate holds for all, none or some candidates.
+`identify` answers whether a query takes one value.
+
+Why:: they come apart, and that gap is the point. With `r = 2` and `|n| ≤ 1`,
+`u ≠ 0` is entailed, while `u` is one of 1, 2 or 3. Folding both into one
+"confidence" would hide the case that matters most in practice: detected, but
+not measured.
+
+=== 6. Model how much of the residual was retained
+
+The built-in model's `view` keeps the residual exactly, only its sign, or only
+its magnitude.
+
+Why:: pipelines routinely discard information before the question is asked:
+thresholded detections keep a sign, and absolute deviations keep a magnitude.
+Coarsening the observation can only add candidates. The test suite checks this
+across the whole table. The package can therefore show what a coarser record
+still supports.
+
+=== 7. Compute the candidates once; refine by filtering
+
+The candidates are computed when a `Case` is built. `refine` filters that list
+rather than rescanning the worlds.
+
+Why:: this is the Agda `refine-candidate` lemma made operational. A candidate of
+the refinement is a candidate of the original that also satisfies the new
+evidence. Filtering makes that true by construction, and makes refinement cost
+proportional to the candidates, not the worlds.
+
+=== 8. Sort identified values
+
+`identify` returns the distinct values in ascending order, so the query's
+values must be ordered by `isless`.
+
+Why:: a canonical order makes two results comparable with `==`, and matches the
+order of the value lists in the Agda table. Queries that return unordered
+values can be mapped to an ordered key first.
+
+=== 9. No dependencies
+
+`[deps]` is empty. Aqua, SHA and Test are test-only.
+
+Why:: the package is a small checker that other code calls. It should load into
+any environment without forcing version resolution on anything else.
+
+=== 10. Check correspondence against the generated table, pinned by hash
+
+`test/fixtures/ExplorerTable.agda` is copied unedited from
+`residual-evidence-types`. The test parses it, checks its SHA-256 and model
+name, and requires every one of the 546 rows to agree.
+
+Why:: the table is produced by a different implementation, the explorer's
+JavaScript, and is written in the Agda `Row` vocabulary. Agreement on every
+configuration is strong evidence that the two implementations compute the same
+function, and that this package's names mean what the Agda names mean. The
+hash turns any upstream change into a visible test failure instead of a silent
+drift.
+
+Status:: the fixture currently comes from commit `4ee1d6f` on the
+`feat/phase3-harness` branch of `residual-evidence-types`, which is not yet
+merged. It will be re-pinned to `main` once it is.
+
+== What a result means
+
+* A verdict is relative to the worlds and the evidence you supplied. `ENTAILED`
+  means "follows from these assumptions", not "true".
+* Candidate counts are not probabilities. The package has no prior over worlds,
+  and a count of 3 is not a one-in-three chance.
+* A noise bound is part of the model. Whether real noise respects it is a
+  question about the instrument, which the package cannot answer. What it can
+  show is how the conclusions change as the bound moves.
+
+== Performance
+
+Building a `Case` evaluates `observe` and `evidence` once per world. `decide`
+and `identify` are linear in the candidates. `explorer_table()` builds 546
+cases over 169 worlds each, about 92,000 world evaluations, and runs in well
+under a second.
+
+== Current limits
+
+* One built-in model, `signed-integer-v1`. Other models are written directly
+  as a `Case`.
+* No composition of cases, such as two observations of the same latent
+  quantity. That is the natural next step.
+* Monotonicity under refinement is tested over the built-in table and follows
+  from the construction. There is no randomised property test over arbitrary
+  cases yet.
+
+== Check the claims yourself
+
+[cols="2,3",options="header"]
+|===
+| Claim | How to check
+
+| Every row agrees with the Agda table
+| `julia --project=. test/runtests.jl` and read the correspondence testset.
+  Change any row in the fixture and the hash check fails. Change the model,
+  for instance `<=` to `<` in the noise bound, and rows disagree.
+
+| Presence without identification at `r = 2`, `\|n\| ≤ 1`
+| The Quick start in the README. The candidates are `(1,1)`, `(2,0)`, `(3,-1)`.
+
+| Empty cases entail nothing
+| `decide(signed_integer_case(residual=2, noise_bound=1, assume_zero=true), _ -> true)`
+  returns `INCONSISTENT`.
+
+| Tighter bounds never overturn a settled verdict
+| The monotonicity testset, which compares every bound with the next looser
+  one across the table.
+
+| The tests can fail
+| Three deliberate faults were each made in turn during development: a
+  strict noise bound, a dropped `assume_zero` clause, and swapped `REFUTED` /
+  `UNRESOLVED`. Each turned the suite red.
+|===

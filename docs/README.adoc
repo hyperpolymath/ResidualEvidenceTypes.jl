@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Documentation
+
+== Design
+
+* link:EXPLAINME.adoc[EXPLAINME]: the design decisions, what each one rules
+  out, and how to check each claim.
+* link:status/ROADMAP.adoc[Roadmap]: the current release and the candidates for
+  the next.
+* link:decisions/0000-template.adoc[Decision records]: the template for new ADRs.
+
+== Project
+
+* link:architecture/REPOSITORY-MAP.adoc[Repository map]: generated, and CI
+  fails if it goes stale.
+* link:MAINTAINERS.adoc[Maintainers], link:GOVERNANCE.adoc[Governance],
+  link:AUDIT.adoc[Release audit gate].
+* `governance/`: maintenance checklist and development approach.
+* `attribution/`: citations and code-owner rationale.
+* `legal/`: licence exhibits.
+* link:practice/AI-CONVENTIONS.adoc[AI conventions] for assistants working in
+  this repository.
