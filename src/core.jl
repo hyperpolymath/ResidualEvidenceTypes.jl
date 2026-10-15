@@ -97,6 +97,20 @@ struct Decision{W}
     status::Verdict
     supporting::Union{W,Nothing}
     counterexample::Union{W,Nothing}
+
+    # The generated default constructor leaves W unbound: W occurs only in
+    # Unions, so an unbraced Decision(ENTAILED, nothing, nothing) cannot
+    # determine it, and Aqua's unbound-args check correctly rejects that
+    # method (first caught on the 1.9 compat floor, the leg the test
+    # matrix exists for). Every caller knows W through its Case{W} and
+    # constructs the braced form, so that is the only constructor defined.
+    function Decision{W}(
+        status::Verdict,
+        supporting::Union{W,Nothing},
+        counterexample::Union{W,Nothing},
+    ) where {W}
+        return new(status, supporting, counterexample)
+    end
 end
 
 """
