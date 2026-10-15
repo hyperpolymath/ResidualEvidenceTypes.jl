@@ -10,8 +10,8 @@ spec = "rsr-criteria-v2"
 declares-against = "2.0.0-draft"
 preset = "julia-library"
 
-# The canon<->repo binding compared by the Dogfood Gate's Canon lockstep job
-# (dogfood-gate.yml, Job 6). Values read from standards' canon.lock at 2.1.2.
+# Current canon identity for the lockstep gate. Mint-time identity remains in
+# PROVENANCE.a2ml; this declaration does not add template capabilities.
 [canon]
 version = "2.1.2"
 criteria_sha256 = "6a5aa8857bd0d0d58ef48827938ca17c251b6b854dacf59d306388d61694d82a"
