@@ -176,7 +176,9 @@ under a second.
 == Applications in practice
 
 The worked case is zero replacement in differential-abundance analysis, as
-MetaManifold does it with `zCompositions::cmultRepl`: a sparse count row has
+MetaManifold does it with `zCompositions::cmultRepl`
+(https://github.com/hyperpolymath/MetaManifold-WebUI/blob/7d5e9a4/src/analysis/differential.jl[src/analysis/differential.jl],
+pinned on the fork's `main` at 7d5e9a4): a sparse count row has
 its zeros imputed as fractions of the observed proportions, bounded by a
 `replacement_delta`. What can the imputed row actually establish? The
 honest answer is a finite-model one: enumerate the latent compositions
