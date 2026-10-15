@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MPL-2.0
+# SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell (hyperpolymath)
+#
 # ResidualEvidenceTypes.jl — Julia CI (julia-library archetype)
 #
 # Pin posture (estate ruling R2, 2026-09-02; D38/D39 resolution 2026-09-19):
@@ -5,7 +8,7 @@
 # Refs resolved 2026-09-19 against the estate estate-pins:
 #   actions/checkout@v7.0.1        = 3d3c42e5aac5ba805825da76410c181273ba90b1
 #   julia-actions/setup-julia@v3.0.2 = fa02766e078afaaf09b14210362cee14137e6a32
-#   julia-actions/cache@v2         = a7bed9df697e5d7309d68afe7542a87621a8b6c8
+#   julia-actions/cache@v3          = 9353db09a0f2bbbdec6f41791918c75d37391b36
 # Regenerate the lock in the SAME PR as any uses: change (estate MUST).
 
 name: Julia CI
@@ -15,6 +18,9 @@ on:
     branches: [main, master]
   pull_request:
 
+permissions:
+  contents: read
+
 # No `continue-on-error` on a MUST check (R1–R9): a red job is the gate
 # working. Coverage (R4) is reported by the estate's standard coverage
 # upload where present; it is not a blocker at template level.
@@ -22,6 +28,7 @@ jobs:
   fmt:
     name: Format (JuliaFormatter)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: julia-actions/setup-julia@v3.0.2
@@ -33,13 +40,13 @@ jobs:
             using Pkg
             Pkg.add("JuliaFormatter")
             using JuliaFormatter
-            for f in filter(isfile, Iterators.flatten((
+            for f in filter(isfile, collect(Iterators.flatten((
                 [joinpath("src", x) for x in readdir("src")],
                 [joinpath("test", x) for x in readdir("test") if x != "cases"],
                 [joinpath("test", "cases", x) for x in readdir(joinpath("test", "cases"))],
-            )))
+            ))))
                 text = read(f, String)
-                formatted = JuliaFormatter.format_string(text)
+                formatted = JuliaFormatter.format_text(text)
                 if text != formatted
                     @error "not formatted" file=f
                     exit(1)
@@ -49,6 +56,7 @@ jobs:
   jet:
     name: Static analysis (JET)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: julia-actions/setup-julia@v3.0.2
@@ -61,11 +69,13 @@ jobs:
             using Pkg
             Pkg.add("JET")
             using JET
-            JET.test_package(path=".", julia_version="1")'
+            using ResidualEvidenceTypes
+            JET.test_package(ResidualEvidenceTypes)'
 
   test:
     name: Test (Test + Aqua)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:

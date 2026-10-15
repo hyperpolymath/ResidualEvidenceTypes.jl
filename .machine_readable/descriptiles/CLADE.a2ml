@@ -6,24 +6,9 @@
 # The identity below is DERIVED. The clade is NOT — a human must choose it.
 
 [identity]
-# THE UUID IS DERIVED, NOT ALLOCATED, NOT INVENTED. The registry spec
-# (gv-clade-index: docs/SPEC-clade-verisim-portal.adoc §Identity Model):
-#
-#     uuid = UUIDv5(namespace = URL, name = "github.com/<owner>/<name>")
-#
-# "The same repo always produces the same UUID without a lookup table." It is a
-# fact anyone can recompute and check — never copy one from another repo, and
-# never make one up. Recompute this one any time with:
-#
-#     uuidgen --sha1 --namespace @url --name "github.com/hyperpolymath/ResidualEvidenceTypes.jl"
-#
-# Verify the method first by reproducing a known worked example:
-#     janus example -> e216170e-ff47-5a5c-bbdd-15e61c8190c8
-#
-# The owner segment is part of the derived name, so it is part of the IDENTITY:
-# the same repo hosted under a different owner has a different uuid. Record the
-# owner that is TRUE TODAY, and re-derive if it ever moves.
-uuid = "d1da4d5e-b035-5884-8663-4b2726957fcb"
+# UUIDv8 re-mint, ADR-008 D320; supersedes the mint-time UUIDv5 literal,
+# which remains in git history.
+uuid = "01a13f35-5b8d-86b9-a2e5-04b9332da99a"
 primary-forge = "github"
 primary-owner = "hyperpolymath"
 canonical-name = "ResidualEvidenceTypes.jl"

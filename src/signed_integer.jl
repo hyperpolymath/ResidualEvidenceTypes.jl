@@ -56,15 +56,25 @@ The retained observation is `residual` seen through `view`. The evidence is
 A noise bound restricts the model. It is not evidence that real noise obeys
 it.
 """
-function signed_integer_case(; residual::Integer = 2, noise_bound::Integer = LIMIT,
-                             view::View = EXACT, assume_zero::Bool = false)
-    abs(residual) <= LIMIT ||
-        throw(ArgumentError("residual must be an integer from -$LIMIT to $LIMIT, got $residual"))
-    0 <= noise_bound <= LIMIT ||
-        throw(ArgumentError("noise bound must be an integer from 0 to $LIMIT, got $noise_bound"))
-    worlds = [SignedWorld(u, n) for u in -LIMIT:LIMIT for n in -LIMIT:LIMIT]
-    return Case(worlds, w -> _retain(view, w.latent + w.noise), _retain(view, Int(residual));
-                evidence = w -> abs(w.noise) <= noise_bound && (!assume_zero || w.latent == 0))
+function signed_integer_case(;
+    residual::Integer = 2,
+    noise_bound::Integer = LIMIT,
+    view::View = EXACT,
+    assume_zero::Bool = false,
+)
+    abs(residual) <= LIMIT || throw(
+        ArgumentError("residual must be an integer from -$LIMIT to $LIMIT, got $residual"),
+    )
+    0 <= noise_bound <= LIMIT || throw(
+        ArgumentError("noise bound must be an integer from 0 to $LIMIT, got $noise_bound"),
+    )
+    worlds = [SignedWorld(u, n) for u = (-LIMIT):LIMIT for n = (-LIMIT):LIMIT]
+    return Case(
+        worlds,
+        w -> _retain(view, w.latent + w.noise),
+        _retain(view, Int(residual));
+        evidence = w -> abs(w.noise) <= noise_bound && (!assume_zero || w.latent == 0),
+    )
 end
 
 """
@@ -88,22 +98,34 @@ struct Row
     values::Vector{Int}
 end
 
-Base.:(==)(a::Row, b::Row) =
-    all(getfield(a, f) == getfield(b, f) for f in fieldnames(Row))
-Base.hash(r::Row, h::UInt) = foldr(hash, (getfield(r, f) for f in fieldnames(Row)); init = h)
+Base.:(==)(a::Row, b::Row) = all(getfield(a, f) == getfield(b, f) for f in fieldnames(Row))
+Base.hash(r::Row, h::UInt) =
+    foldr(hash, (getfield(r, f) for f in fieldnames(Row)); init = h)
 
 """
     row(; residual, noise_bound, view = EXACT, assume_zero = false)
 
 The [`Row`](@ref) for one configuration.
 """
-function row(; residual::Integer, noise_bound::Integer, view::View = EXACT,
-             assume_zero::Bool = false)
+function row(;
+    residual::Integer,
+    noise_bound::Integer,
+    view::View = EXACT,
+    assume_zero::Bool = false,
+)
     c = signed_integer_case(; residual, noise_bound, view, assume_zero)
     presence = decide(c, w -> w.latent != 0)
     identity = identify(c, w -> w.latent)
-    return Row(residual, noise_bound, view, assume_zero, length(candidates(c)),
-               presence.status, identity.status, Vector{Int}(identity.values))
+    return Row(
+        residual,
+        noise_bound,
+        view,
+        assume_zero,
+        length(candidates(c)),
+        presence.status,
+        identity.status,
+        Vector{Int}(identity.values),
+    )
 end
 
 """
@@ -113,9 +135,7 @@ Every configuration of the model, 546 rows, in the order the Agda table uses:
 residual ascending (outermost), then noise bound, then view (`EXACT`, `SIGN`,
 `MAGNITUDE`), then `assume_zero` (`false` before `true`).
 """
-explorer_table() =
-    [row(; residual, noise_bound, view, assume_zero)
-     for residual in -LIMIT:LIMIT
-     for noise_bound in 0:LIMIT
-     for view in instances(View)
-     for assume_zero in (false, true)]
+explorer_table() = [
+    row(; residual, noise_bound, view, assume_zero) for residual = (-LIMIT):LIMIT for
+    noise_bound = 0:LIMIT for view in instances(View) for assume_zero in (false, true)
+]

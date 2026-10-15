@@ -66,9 +66,13 @@ those of `c` that satisfy `extra`. (Agda: `refine-candidate`.)
 A claim that [`decide`](@ref) entails for `c` stays entailed for the
 refinement, unless the refinement is inconsistent. (Agda: `refine-claim`.)
 """
-refine(c::Case, extra) =
-    Case(c.worlds, c.observe, c.retained, w -> c.evidence(w) && extra(w),
-         filter(extra, c.candidates))
+refine(c::Case, extra) = Case(
+    c.worlds,
+    c.observe,
+    c.retained,
+    w -> c.evidence(w) && extra(w),
+    filter(extra, c.candidates),
+)
 
 """
     Verdict
@@ -93,6 +97,20 @@ struct Decision{W}
     status::Verdict
     supporting::Union{W,Nothing}
     counterexample::Union{W,Nothing}
+
+    # The generated default constructor leaves W unbound: W occurs only in
+    # Unions, so an unbraced Decision(ENTAILED, nothing, nothing) cannot
+    # determine it, and Aqua's unbound-args check correctly rejects that
+    # method (first caught on the 1.9 compat floor, the leg the test
+    # matrix exists for). Every caller knows W through its Case{W} and
+    # constructs the braced form, so that is the only constructor defined.
+    function Decision{W}(
+        status::Verdict,
+        supporting::Union{W,Nothing},
+        counterexample::Union{W,Nothing},
+    ) where {W}
+        return new(status, supporting, counterexample)
+    end
 end
 
 """
@@ -106,12 +124,13 @@ it cannot be ruled out either.
 """
 function decide(c::Case{W}, claim) where {W}
     isempty(c.candidates) && return Decision{W}(INCONSISTENT, nothing, nothing)
-    i = findfirst(claim, c.candidates)
-    j = findfirst(!claim, c.candidates)
+    i = findfirst(w -> claim(w), c.candidates)
+    j = findfirst(w -> !claim(w), c.candidates)
     supporting = i === nothing ? nothing : c.candidates[i]
     counterexample = j === nothing ? nothing : c.candidates[j]
-    status = counterexample === nothing ? ENTAILED :
-             supporting === nothing ? REFUTED : UNRESOLVED
+    status =
+        counterexample === nothing ? ENTAILED :
+        supporting === nothing ? REFUTED : UNRESOLVED
     return Decision{W}(status, supporting, counterexample)
 end
 
@@ -147,7 +166,7 @@ and whether there is exactly one. The query's values must be ordered by
 """
 function identify(c::Case, query)
     vs = sort!(unique(map(query, c.candidates)))
-    status = isempty(c.candidates) ? NO_CANDIDATE :
-             length(vs) == 1 ? IDENTIFIED : UNIDENTIFIED
+    status =
+        isempty(c.candidates) ? NO_CANDIDATE : length(vs) == 1 ? IDENTIFIED : UNIDENTIFIED
     return Identification(status, vs)
 end

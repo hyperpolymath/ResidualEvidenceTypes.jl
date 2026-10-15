@@ -3,9 +3,14 @@
 #
 # The generic checker on a hand-sized case, independent of the finite model.
 
+struct FirstGreaterThan
+    threshold::Int
+end
+(claim::FirstGreaterThan)(w) = w[1] > claim.threshold
+
 @testset "core" begin
     # Worlds are (a, b) with a, b in 0:2; we observe only a + b.
-    worlds = [(a, b) for a in 0:2 for b in 0:2]
+    worlds = [(a, b) for a = 0:2 for b = 0:2]
     c = Case(worlds, w -> w[1] + w[2], 2)
 
     @test candidates(c) == [(0, 2), (1, 1), (2, 0)]
@@ -22,6 +27,28 @@
         @test decide(c, w -> w[1] + w[2] == 2).counterexample === nothing
         @test decide(c, w -> w[1] > 2).status == REFUTED
         @test decide(c, w -> w[1] > 2).supporting === nothing
+    end
+
+    @testset "decide accepts callable structs" begin
+        d = decide(c, FirstGreaterThan(0))
+        @test d.status == UNRESOLVED
+        @test d.supporting == (1, 1)
+        @test d.counterexample == (0, 2)
+
+        entailed = decide(c, FirstGreaterThan(-1))
+        @test entailed.status == ENTAILED
+        @test entailed.supporting == (0, 2)
+        @test entailed.counterexample === nothing
+
+        refuted = decide(c, FirstGreaterThan(2))
+        @test refuted.status == REFUTED
+        @test refuted.supporting === nothing
+        @test refuted.counterexample == (0, 2)
+
+        inconsistent = decide(refine(c, _ -> false), FirstGreaterThan(0))
+        @test inconsistent.status == INCONSISTENT
+        @test inconsistent.supporting === nothing
+        @test inconsistent.counterexample === nothing
     end
 
     @testset "identify" begin

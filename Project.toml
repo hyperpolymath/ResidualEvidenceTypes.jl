@@ -1,5 +1,11 @@
+# uuid below is the UUIDv8 re-mint of the package identity (ADR-008
+# amendment D320: an unregistered Julia package's own uuid re-mints as
+# version 8), minted with the estate generator (standards'
+# scripts/uuid-v8.js, profile T) on 2026-10-15. It supersedes the mint-time
+# UUIDv5 literal (in git history; not spelled out here because the strict
+# UUIDv8 scanner reads every hyphenated literal, comments included).
 name = "ResidualEvidenceTypes"
-uuid = "991b2426-ef47-5ab5-88bd-507ff6599371"
+uuid = "01a13f35-56fe-8535-b8e3-c8295e4d9859"
 license = "MPL-2.0"
 version = "0.1.0"
 authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
