@@ -122,10 +122,10 @@ An `UNRESOLVED` verdict carries both witnesses. The counterexample is the
 reason the claim is not established. The supporting candidate is the reason
 it cannot be ruled out either.
 """
-function decide(c::Case{W}, claim::Function) where {W}
+function decide(c::Case{W}, claim) where {W}
     isempty(c.candidates) && return Decision{W}(INCONSISTENT, nothing, nothing)
-    i = findfirst(claim, c.candidates)
-    j = findfirst(!claim, c.candidates)
+    i = findfirst(w -> claim(w), c.candidates)
+    j = findfirst(w -> !claim(w), c.candidates)
     supporting = i === nothing ? nothing : c.candidates[i]
     counterexample = j === nothing ? nothing : c.candidates[j]
     status =
