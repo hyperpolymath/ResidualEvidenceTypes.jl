@@ -172,3 +172,17 @@ under a second.
   strict noise bound, a dropped `assume_zero` clause, and swapped `REFUTED` /
   `UNRESOLVED`. Each turned the suite red.
 |===
+
+== Applications in practice
+
+The worked case is zero replacement in differential-abundance analysis, as
+MetaManifold does it with `zCompositions::cmultRepl`: a sparse count row has
+its zeros imputed as fractions of the observed proportions, bounded by a
+`replacement_delta`. What can the imputed row actually establish? The
+honest answer is a finite-model one: enumerate the latent compositions
+compatible with what was observed, and keep only the claims that hold
+across every candidate world. A fold change that survives all candidates is
+a finding; one that holds only for some is a candidate, not a result. That
+is this library's discipline applied to the moment pipelines are most
+tempted to over-claim -- the moment a gap in the data has been filled in
+and everyone pretends it was always there.
