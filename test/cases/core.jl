@@ -5,7 +5,7 @@
 
 @testset "core" begin
     # Worlds are (a, b) with a, b in 0:2; we observe only a + b.
-    worlds = [(a, b) for a in 0:2 for b in 0:2]
+    worlds = [(a, b) for a = 0:2 for b = 0:2]
     c = Case(worlds, w -> w[1] + w[2], 2)
 
     @test candidates(c) == [(0, 2), (1, 1), (2, 0)]

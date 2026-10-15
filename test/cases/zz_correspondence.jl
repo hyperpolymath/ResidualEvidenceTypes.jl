@@ -19,11 +19,19 @@ const FIXTURE_SHA256 = "2baa79f2dd0ac98d0e92c92919e0f2aad07a9cb69c6f44712d2fc1b0
 agda_int(tag, n) = tag == "pos" ? parse(Int, n) : -parse(Int, n) - 1
 
 const VIEWS = Dict("exact" => EXACT, "sign" => SIGN, "magnitude" => MAGNITUDE)
-const VERDICTS = Dict("entailed" => ENTAILED, "refuted" => REFUTED,
-                      "unresolved" => UNRESOLVED, "inconsistent" => INCONSISTENT)
-const IDS = Dict("identified" => IDENTIFIED, "unidentified" => UNIDENTIFIED,
-                 "no-candidate" => NO_CANDIDATE)
-const ROW = r"^(?:    |  ∷ )row \((pos|negsuc) (\d+)\) (\d+) (\w+) (true|false) (\d+) (\w+) ([\w-]+) (.*)$"
+const VERDICTS = Dict(
+    "entailed" => ENTAILED,
+    "refuted" => REFUTED,
+    "unresolved" => UNRESOLVED,
+    "inconsistent" => INCONSISTENT,
+)
+const IDS = Dict(
+    "identified" => IDENTIFIED,
+    "unidentified" => UNIDENTIFIED,
+    "no-candidate" => NO_CANDIDATE,
+)
+const ROW =
+    r"^(?:    |  ∷ )row \((pos|negsuc) (\d+)\) (\d+) (\w+) (true|false) (\d+) (\w+) ([\w-]+) (.*)$"
 
 function parse_fixture(path)
     rows = Row[]
@@ -31,8 +39,19 @@ function parse_fixture(path)
         m = match(ROW, line)
         m === nothing && continue
         values = [agda_int(x[1], x[2]) for x in eachmatch(r"(pos|negsuc) (\d+)", m[9])]
-        push!(rows, Row(agda_int(m[1], m[2]), parse(Int, m[3]), VIEWS[m[4]], m[5] == "true",
-                        parse(Int, m[6]), VERDICTS[m[7]], IDS[m[8]], values))
+        push!(
+            rows,
+            Row(
+                agda_int(m[1], m[2]),
+                parse(Int, m[3]),
+                VIEWS[m[4]],
+                m[5] == "true",
+                parse(Int, m[6]),
+                VERDICTS[m[7]],
+                IDS[m[8]],
+                values,
+            ),
+        )
     end
     return rows
 end

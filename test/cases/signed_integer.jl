@@ -53,24 +53,31 @@
     end
 
     table = explorer_table()
-    at(r, b, v, z) = only(filter(x -> (x.residual, x.noise_bound, x.view, x.assume_zero) == (r, b, v, z), table))
+    at(r, b, v, z) = only(
+        filter(
+            x -> (x.residual, x.noise_bound, x.view, x.assume_zero) == (r, b, v, z),
+            table,
+        ),
+    )
 
     @testset "a tighter noise bound never overturns a settled verdict" begin
         # Lowering the bound adds evidence. What was entailed or refuted stays
         # so, or the case becomes inconsistent (Agda: refine-claim).
         settled = true
-        for r in -LIMIT:LIMIT, v in instances(View), z in (false, true), b in 1:LIMIT
+        for r = (-LIMIT):LIMIT, v in instances(View), z in (false, true), b = 1:LIMIT
             hi, lo = at(r, b, v, z), at(r, b - 1, v, z)
             settled &= lo.count <= hi.count
             settled &= lo.values ⊆ hi.values
-            settled &= hi.presence ∉ (ENTAILED, REFUTED) || lo.presence ∈ (hi.presence, INCONSISTENT)
+            settled &=
+                hi.presence ∉ (ENTAILED, REFUTED) ||
+                lo.presence ∈ (hi.presence, INCONSISTENT)
         end
         @test settled
     end
 
     @testset "retaining more of the residual never adds candidates" begin
         fewer = true
-        for r in -LIMIT:LIMIT, b in 0:LIMIT, z in (false, true)
+        for r = (-LIMIT):LIMIT, b = 0:LIMIT, z in (false, true)
             e = at(r, b, EXACT, z)
             fewer &= e.count <= at(r, b, SIGN, z).count
             fewer &= e.count <= at(r, b, MAGNITUDE, z).count

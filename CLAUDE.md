@@ -60,7 +60,7 @@ Use plain JavaScript when this tooling is needed. The "use ReScript" rule is ret
 
 # This repo: `ResidualEvidenceTypes.jl`  ·  clade `UNASSIGNED-ResidualEvidenceTypes.jl`
 
-- **Identity** — uuid `d1da4d5e-b035-5884-8663-4b2726957fcb`; clade `UNASSIGNED` (secondary ``); born 2026-09-30; forge `hyperpolymath/ResidualEvidenceTypes.jl`.
+- **Identity** — uuid `01a13f35-5b8d-86b9-a2e5-04b9332da99a` (UUIDv8 re-mint, ADR-008 D320; supersedes the mint-time v5 literal, which is in git history); clade `UNASSIGNED` (secondary ``); born 2026-09-30; forge `hyperpolymath/ResidualEvidenceTypes.jl`.
 - **IS** — Executable companion to residual-evidence-types: finite candidate sets, verdicts with witnesses, and value identification for what an observation does and does not establish.
 - **IS-NOT** — a proof of anything (the Agda repo residual-evidence-types holds the proofs; this package is cross-checked against its table) · EpistemicTypes.jl's ResidualInfo (a per-row PR2 pipeline heuristic that shares only the word 'residual') · a probability or likelihood model (candidate counts are not probabilities) · a causal model (confounding and source identity are outside its scope)
 - **Where it sits** — pipeline position **library**; chain `residual-evidence-types (Agda) → ResidualEvidenceTypes.jl → (callers that need to state what a residual establishes)`; coordination = `nextgen-typing`.

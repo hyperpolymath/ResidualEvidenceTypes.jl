@@ -22,11 +22,35 @@ table, row for row.
 """
 module ResidualEvidenceTypes
 
-export Case, candidates, isconsistent, witness, refine,
-       Verdict, ENTAILED, REFUTED, UNRESOLVED, INCONSISTENT, Decision, decide,
-       IdStatus, IDENTIFIED, UNIDENTIFIED, NO_CANDIDATE, Identification, identify,
-       View, EXACT, SIGN, MAGNITUDE, SignedWorld, signed_integer_case,
-       Row, row, explorer_table, MODEL, LIMIT
+export Case,
+    candidates,
+    isconsistent,
+    witness,
+    refine,
+    Verdict,
+    ENTAILED,
+    REFUTED,
+    UNRESOLVED,
+    INCONSISTENT,
+    Decision,
+    decide,
+    IdStatus,
+    IDENTIFIED,
+    UNIDENTIFIED,
+    NO_CANDIDATE,
+    Identification,
+    identify,
+    View,
+    EXACT,
+    SIGN,
+    MAGNITUDE,
+    SignedWorld,
+    signed_integer_case,
+    Row,
+    row,
+    explorer_table,
+    MODEL,
+    LIMIT
 
 include("core.jl")
 include("signed_integer.jl")

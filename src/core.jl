@@ -66,9 +66,13 @@ those of `c` that satisfy `extra`. (Agda: `refine-candidate`.)
 A claim that [`decide`](@ref) entails for `c` stays entailed for the
 refinement, unless the refinement is inconsistent. (Agda: `refine-claim`.)
 """
-refine(c::Case, extra) =
-    Case(c.worlds, c.observe, c.retained, w -> c.evidence(w) && extra(w),
-         filter(extra, c.candidates))
+refine(c::Case, extra) = Case(
+    c.worlds,
+    c.observe,
+    c.retained,
+    w -> c.evidence(w) && extra(w),
+    filter(extra, c.candidates),
+)
 
 """
     Verdict
@@ -104,14 +108,15 @@ An `UNRESOLVED` verdict carries both witnesses. The counterexample is the
 reason the claim is not established. The supporting candidate is the reason
 it cannot be ruled out either.
 """
-function decide(c::Case{W}, claim) where {W}
+function decide(c::Case{W}, claim::Function) where {W}
     isempty(c.candidates) && return Decision{W}(INCONSISTENT, nothing, nothing)
     i = findfirst(claim, c.candidates)
     j = findfirst(!claim, c.candidates)
     supporting = i === nothing ? nothing : c.candidates[i]
     counterexample = j === nothing ? nothing : c.candidates[j]
-    status = counterexample === nothing ? ENTAILED :
-             supporting === nothing ? REFUTED : UNRESOLVED
+    status =
+        counterexample === nothing ? ENTAILED :
+        supporting === nothing ? REFUTED : UNRESOLVED
     return Decision{W}(status, supporting, counterexample)
 end
 
@@ -147,7 +152,7 @@ and whether there is exactly one. The query's values must be ordered by
 """
 function identify(c::Case, query)
     vs = sort!(unique(map(query, c.candidates)))
-    status = isempty(c.candidates) ? NO_CANDIDATE :
-             length(vs) == 1 ? IDENTIFIED : UNIDENTIFIED
+    status =
+        isempty(c.candidates) ? NO_CANDIDATE : length(vs) == 1 ? IDENTIFIED : UNIDENTIFIED
     return Identification(status, vs)
 end
