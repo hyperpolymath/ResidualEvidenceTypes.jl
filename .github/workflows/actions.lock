@@ -133,7 +133,7 @@ dependencies:
         owner_id: 44036562
         repo_id: 192626254
     'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f':
-        ref: 'bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
+        ref: 'v7.0.0'
         commit: 'sha1-bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
         owner_id: 44036562
         repo_id: 192625955
@@ -175,7 +175,7 @@ dependencies:
         owner_id: 75048950
         repo_id: 623796603
     'hyperpolymath/cicd-suite@55556cf5ba71ba744695861503c13148d3915a5d':
-        ref: '55556cf5ba71ba744695861503c13148d3915a5d'
+        ref: 'main'
         commit: 'sha1-55556cf5ba71ba744695861503c13148d3915a5d'
         owner_id: 6759885
         repo_id: 1326697643
@@ -195,7 +195,7 @@ dependencies:
         owner_id: 6759885
         repo_id: 1352485172
     'hyperpolymath/standards@94572e612a7bf11f8e6343d19adadf17ef2a3de3':
-        ref: '94572e612a7bf11f8e6343d19adadf17ef2a3de3'
+        ref: 'main'
         commit: 'sha1-94572e612a7bf11f8e6343d19adadf17ef2a3de3'
         owner_id: 6759885
         repo_id: 1116521501
