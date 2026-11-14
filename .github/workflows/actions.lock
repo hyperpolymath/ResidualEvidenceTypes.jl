@@ -133,7 +133,7 @@ dependencies:
         owner_id: 44036562
         repo_id: 192626254
     'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f':
-        ref: 'bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
+        ref: 'v7.0.0'
         commit: 'sha1-bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
         owner_id: 44036562
         repo_id: 192625955
