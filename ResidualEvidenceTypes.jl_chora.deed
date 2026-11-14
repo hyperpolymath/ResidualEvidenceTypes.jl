@@ -8,8 +8,8 @@
 (repo-deed
   :schema-version "1.0.0"
   :canonical-name "ResidualEvidenceTypes.jl"
-  :beholding-chora #u5"estate/chora"
-  :repo-uuid #u5"github.com/hyperpolymath/ResidualEvidenceTypes.jl"
+  :beholding-chora #u8"chora:estate/github.com/hyperpolymath"
+  :repo-uuid #u8"gv-clade-index:github.com/hyperpolymath/ResidualEvidenceTypes.jl"
   (manifest
     :version "0.1.0"
     :last-updated "2026-09-23"
