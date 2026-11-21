@@ -7,7 +7,7 @@ workflows:
         - 'actions/checkout@v7.0.1'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@33d7b85da1a04171e211befe2c739303b9a4c066'
+        - 'github/codeql-action@v4.39.3'
     '.github/workflows/deed-validate.yml':
         - 'actions/checkout@v7.0.1'
         - 'hyperpolymath/deed-ecosystem@main'
@@ -30,14 +30,12 @@ workflows:
         - 'actions/checkout@v7.0.1'
     '.github/workflows/estate-rules.yml':
         - 'actions/checkout@v7.0.1'
-    '.github/workflows/governance.yml':
-        - 'hyperpolymath/standards@94572e612a7bf11f8e6343d19adadf17ef2a3de3'
+    '.github/workflows/governance.yml': []
     '.github/workflows/groove-check.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/guix-policy.yml':
         - 'actions/checkout@v7.0.1'
-    '.github/workflows/hypatia-scan.yml':
-        - 'hyperpolymath/standards@94572e612a7bf11f8e6343d19adadf17ef2a3de3'
+    '.github/workflows/hypatia-scan.yml': []
     '.github/workflows/julia-ci.yml':
         - 'actions/checkout@v7.0.1'
         - 'julia-actions/cache@v3'
@@ -48,10 +46,8 @@ workflows:
     '.github/workflows/label-triage.yml': []
     '.github/workflows/labels.yml': []
     '.github/workflows/lock-sync-gate.yml': []
-    '.github/workflows/main-estate-audit.yml':
-        - 'hyperpolymath/cicd-suite@55556cf5ba71ba744695861503c13148d3915a5d'
-    '.github/workflows/mirror.yml':
-        - 'hyperpolymath/standards@94572e612a7bf11f8e6343d19adadf17ef2a3de3'
+    '.github/workflows/main-estate-audit.yml': []
+    '.github/workflows/mirror.yml': []
     '.github/workflows/ossf-best-practices.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/pages.yml':
@@ -75,12 +71,9 @@ workflows:
         - 'actions/checkout@v7.0.1'
     '.github/workflows/runtime-policy.yml':
         - 'actions/checkout@v7.0.1'
-    '.github/workflows/rust-ci.yml':
-        - 'hyperpolymath/standards@94572e612a7bf11f8e6343d19adadf17ef2a3de3'
-    '.github/workflows/scorecard.yml':
-        - 'hyperpolymath/standards@94572e612a7bf11f8e6343d19adadf17ef2a3de3'
-    '.github/workflows/secret-scanner.yml':
-        - 'hyperpolymath/standards@94572e612a7bf11f8e6343d19adadf17ef2a3de3'
+    '.github/workflows/rust-ci.yml': []
+    '.github/workflows/scorecard.yml': []
+    '.github/workflows/secret-scanner.yml': []
     '.github/workflows/security-policy.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/sonarqube.yml':
@@ -164,7 +157,7 @@ dependencies:
         commit: 'sha1-54075bcc5e249e4758d363f27d099f55d843f124'
         owner_id: 47606891
         repo_id: 331103973
-    'github/codeql-action@33d7b85da1a04171e211befe2c739303b9a4c066':
+    'github/codeql-action@v4.39.3':
         ref: 'v4.39.3'
         commit: 'sha1-33d7b85da1a04171e211befe2c739303b9a4c066'
         owner_id: 9919
@@ -174,11 +167,6 @@ dependencies:
         commit: 'sha1-0f8e8c99d88aeb3fbfd523f1ef2c6f762d10d64d'
         owner_id: 75048950
         repo_id: 623796603
-    'hyperpolymath/cicd-suite@55556cf5ba71ba744695861503c13148d3915a5d':
-        ref: '55556cf5ba71ba744695861503c13148d3915a5d'
-        commit: 'sha1-55556cf5ba71ba744695861503c13148d3915a5d'
-        owner_id: 6759885
-        repo_id: 1326697643
     'hyperpolymath/deed-ecosystem@main':
         ref: 'main'
         commit: 'sha1-eb89a3311e96835cdacad875e52118bed571880d'
@@ -194,11 +182,6 @@ dependencies:
         commit: 'sha1-e384daf6167a7a7567642d6a62060106244d2413'
         owner_id: 6759885
         repo_id: 1352485172
-    'hyperpolymath/standards@94572e612a7bf11f8e6343d19adadf17ef2a3de3':
-        ref: '94572e612a7bf11f8e6343d19adadf17ef2a3de3'
-        commit: 'sha1-94572e612a7bf11f8e6343d19adadf17ef2a3de3'
-        owner_id: 6759885
-        repo_id: 1116521501
     'julia-actions/cache@v3':
         ref: 'v3'
         commit: 'sha1-9353db09a0f2bbbdec6f41791918c75d37391b36'
