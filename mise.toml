@@ -11,7 +11,6 @@
 # Language runtimes
 rust = "latest"
 zig = "latest"
-bun = "latest"
 
 # Package managers / task runner
 just = "latest"   # the estate's task runner (Justfile)
